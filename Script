@@ -9,7 +9,7 @@ local player = Players.LocalPlayer
 local gui = Instance.new("ScreenGui")
 gui.Name = "ZGui" -- Changed to "ZGui"
 gui.ResetOnSpawn = false -- Ensure the GUI doesn't disappear on reset
-gui.Parent = CoreGui -- Set the GUI parent to CoreGui for the nicer look
+gui.Parent = CoreGui -- Set the GUI parent to CoreGui
 
 -- Create the main frame
 local frame = Instance.new("Frame")
@@ -49,13 +49,18 @@ UICornerButton.Parent = zButton
 
 -- Button click event
 zButton.MouseButton1Click:Connect(function()
-    -- You can add functionality here if needed
+    -- Simulate "Z" key press
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
 end)
 
--- Key press event to handle specific actions (if needed)
+-- Key press event to handle specific actions
 UserInputService.InputBegan:Connect(function(input, isProcessed)
     if isProcessed then return end
-    -- Handle key inputs if needed
+    if input.KeyCode == Enum.KeyCode.Z then
+        -- Simulate button click
+        zButton:Click()
+    end
 end)
 
 -- Variable to track if the notification has been shown
@@ -82,6 +87,6 @@ end)
 -- Display notification when the GUI is created
 StarterGui:SetCore("SendNotification", {
     Title = "Info";
-    Text = "Type /e killgui To Kill The Gui";
+    Text = "Type /e killgui to kill the GUI.";
     Duration = 15; -- 15 seconds notification
 })
