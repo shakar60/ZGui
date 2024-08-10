@@ -5,69 +5,87 @@ local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
 
--- Create a GUI
-local Gui = Instance.new("ScreenGui")
-Gui.Parent = CoreGui
+-- Create the main ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "ZGui" -- Changed to "ZGui"
+gui.ResetOnSpawn = false -- Ensure the GUI doesn't disappear on reset
+gui.Parent = CoreGui -- Set the GUI parent to CoreGui for the nicer look
 
-local OuterFrame = Instance.new("Frame")
-OuterFrame.Size = UDim2.new(0, 200, 0, 100) -- Adjusted size
-OuterFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
-OuterFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
-OuterFrame.BackgroundTransparency = 0.5 -- Slightly transparent
-OuterFrame.BorderSizePixel = 2
-OuterFrame.BorderColor3 = Color3.fromRGB(128, 128, 128) -- Grey outline
-OuterFrame.Active = true
-OuterFrame.Draggable = true
-OuterFrame.Parent = Gui
+-- Create the main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
+frame.BackgroundTransparency = 0.5 -- Slightly transparent
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.fromRGB(128, 128, 128) -- Grey outline
+frame.Active = true
+frame.Draggable = true -- Make the frame draggable
+frame.Parent = gui
 
--- Add rounded corners to the outer frame
+-- Add rounded corners to the main frame
 local UICornerOuter = Instance.new("UICorner")
 UICornerOuter.CornerRadius = UDim.new(0, 20)
-UICornerOuter.Parent = OuterFrame
+UICornerOuter.Parent = frame
 
-local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(0, 180, 0, 60) -- Adjusted size
-Button.Position = UDim2.new(0.5, -90, 0.5, -30)
-Button.Text = "Z Gui Off" -- Updated text
-Button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-Button.TextScaled = true -- Makes the text larger
-Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey background
-Button.BorderSizePixel = 0
-Button.Parent = OuterFrame
+-- Create the main button
+local zButton = Instance.new("TextButton")
+zButton.Name = "ZButton" -- Changed to "ZButton"
+zButton.Size = UDim2.new(0, 180, 0, 60)
+zButton.Position = UDim2.new(0.5, -90, 0.5, -30)
+zButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey background
+zButton.BorderSizePixel = 0
+zButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+zButton.Text = "Z Gui" -- Changed to "Z Gui"
+zButton.Font = Enum.Font.SourceSans
+zButton.TextSize = 24
+zButton.TextScaled = true -- Makes the text larger
+zButton.Parent = frame
 
 -- Add rounded corners to the button
 local UICornerButton = Instance.new("UICorner")
 UICornerButton.CornerRadius = UDim.new(0, 10)
-UICornerButton.Parent = Button
-
--- Toggle state
-local isZGuiOn = false -- Updated variable name
+UICornerButton.Parent = zButton
 
 -- Button click event
-Button.MouseButton1Click:Connect(function()
-    isZGuiOn = not isZGuiOn
-    Button.Text = isZGuiOn and "Z Gui On" or "Z Gui Off" -- Updated text
+zButton.MouseButton1Click:Connect(function()
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, Enum.KeyCode.Z, false, game) -- Changed to "Z"
 end)
 
--- Key press event to toggle Z Gui
+-- Key press event to send the key press
 UserInputService.InputBegan:Connect(function(input, isProcessed)
     if isProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Z then -- Key to toggle
-        isZGuiOn = not isZGuiOn
-        Button.Text = isZGuiOn and "Z Gui On" or "Z Gui Off" -- Updated text
+    if input.KeyCode == Enum.KeyCode.Z then -- Key to send
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendKeyEvent(true, Enum.KeyCode.Z, false, game) -- Changed to "Z"
     end
 end)
 
--- Chat command to destroy GUI
+-- Variable to track if the notification has been shown
+local notificationShown = false
+
+-- Chat command to kill the GUI
 player.Chatted:Connect(function(message)
     if message:lower() == "/e killgui" then
-        Gui:Destroy()
+        if gui then
+            gui:Destroy()
+            if not notificationShown then
+                -- Display notification
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Info";
+                    Text = "GUI has been removed.";
+                    Duration = 15; -- 15 seconds notification
+                })
+                notificationShown = true
+            end
+        end
     end
 end)
 
--- Show notification
+-- Display notification when the GUI is created
 StarterGui:SetCore("SendNotification", {
-    Title = "Info",
-    Text = "Type /e killgui To Destroy The Z Gui", -- Updated text
-    Duration = 30,
+    Title = "Info";
+    Text = "Type /e killgui To Kill The Gui";
+    Duration = 15; -- 15 seconds notification
 })
