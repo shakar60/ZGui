@@ -1,64 +1,73 @@
--- Create the main ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "ZGui" --change the word to the letter you want
-gui.ResetOnSpawn = false -- Ensure the GUI doesn't disappear on reset
-gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 
--- Create the main frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 100, 0, 50)
-frame.Position = UDim2.new(0.5, -50, 0.5, -25)
-frame.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true -- Make the frame draggable
-frame.Parent = gui
+local player = Players.LocalPlayer
 
--- Create the top frame
-local topFrame = Instance.new("Frame")
-topFrame.Size = UDim2.new(1, 0, 0, 10)
-topFrame.Position = UDim2.new(0, 0, 0, 0)
-topFrame.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-topFrame.BorderSizePixel = 0
-topFrame.Parent = frame
+-- Create a GUI
+local Gui = Instance.new("ScreenGui")
+Gui.Parent = CoreGui
 
--- Create the bottom frame
-local bottomFrame = Instance.new("Frame")
-bottomFrame.Size = UDim2.new(1, 0, 0, 10)
-bottomFrame.Position = UDim2.new(0, 0, 1, -10)
-bottomFrame.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-bottomFrame.BorderSizePixel = 0
-bottomFrame.Parent = frame
+local OuterFrame = Instance.new("Frame")
+OuterFrame.Size = UDim2.new(0, 200, 0, 100) -- Adjusted size
+OuterFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+OuterFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
+OuterFrame.BackgroundTransparency = 0.5 -- Slightly transparent
+OuterFrame.BorderSizePixel = 2
+OuterFrame.BorderColor3 = Color3.fromRGB(128, 128, 128) -- Grey outline
+OuterFrame.Active = true
+OuterFrame.Draggable = true
+OuterFrame.Parent = Gui
 
--- Create the main button
-local cButton = Instance.new("TextButton")
-cButton.Name = "ZButton" --change the word to the letter you want
-cButton.Size = UDim2.new(0, 50, 0, 50)
-cButton.Position = UDim2.new(0.5, -25, 0.5, -25)
-cButton.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
-cButton.Text = "Z" --change the word to the letter you want
-cButton.Font = Enum.Font.SourceSans
-cButton.TextSize = 24
-cButton.Parent = frame
+-- Add rounded corners to the outer frame
+local UICornerOuter = Instance.new("UICorner")
+UICornerOuter.CornerRadius = UDim.new(0, 20)
+UICornerOuter.Parent = OuterFrame
 
-cButton.MouseButton1Click:Connect(function()
-    local vim = game:GetService("VirtualInputManager")
-    vim:SendKeyEvent(true, Enum.KeyCode.Z, false, game) --change the word to the letter you want
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(0, 180, 0, 60) -- Adjusted size
+Button.Position = UDim2.new(0.5, -90, 0.5, -30)
+Button.Text = "Z Gui Off" -- Updated text
+Button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+Button.TextScaled = true -- Makes the text larger
+Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey background
+Button.BorderSizePixel = 0
+Button.Parent = OuterFrame
+
+-- Add rounded corners to the button
+local UICornerButton = Instance.new("UICorner")
+UICornerButton.CornerRadius = UDim.new(0, 10)
+UICornerButton.Parent = Button
+
+-- Toggle state
+local isZGuiOn = false -- Updated variable name
+
+-- Button click event
+Button.MouseButton1Click:Connect(function()
+    isZGuiOn = not isZGuiOn
+    Button.Text = isZGuiOn and "Z Gui On" or "Z Gui Off" -- Updated text
 end)
 
--- Create the close button (X button)
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 20, 0, 20)
-closeButton.Position = UDim2.new(1, -20, 0, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-closeButton.BorderSizePixel = 0
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Text = "X"
-closeButton.Font = Enum.Font.SourceSans
-closeButton.TextSize = 14
-closeButton.Parent = frame
-
-closeButton.MouseButton1Click:Connect(function()
-    gui:Destroy()
+-- Key press event to toggle Z Gui
+UserInputService.InputBegan:Connect(function(input, isProcessed)
+    if isProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Z then -- Key to toggle
+        isZGuiOn = not isZGuiOn
+        Button.Text = isZGuiOn and "Z Gui On" or "Z Gui Off" -- Updated text
+    end
 end)
+
+-- Chat command to destroy GUI
+player.Chatted:Connect(function(message)
+    if message:lower() == "/e killgui" then
+        Gui:Destroy()
+    end
+end)
+
+-- Show notification
+StarterGui:SetCore("SendNotification", {
+    Title = "Info",
+    Text = "Type /e killgui To Destroy The Z Gui", -- Updated text
+    Duration = 30,
+})
